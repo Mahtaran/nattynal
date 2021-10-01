@@ -1,0 +1,24 @@
+plugins {
+	id "java"
+	id "application"
+	id "idea"
+	id "eclipse"
+	id "maven-publish"
+	id "io.freefair.lombok" version "6.+"
+	id "com.github.johnrengelman.shadow" version "7.+"
+	id "com.github.node-gradle.node" version "3.+"
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+}
+
+task parcelBuild(type: Exec) {
+	workingDir = "E:\\Coding\\Projects\\Mahtaran\\NattyNal\\npm-app"
+	commandLine "yarn", "parcel", "build", "index.html"
+}
+
+parcelBuild.dependsOn(yarn)

@@ -19,8 +19,8 @@ public class NattyNal {
 			model.put("message", "Hello World!");
 			model.put("greeting", "General Kenobi");
 			Configuration config = new Configuration(Configuration.VERSION_2_3_26);
-			config.setClassForTemplateLoading(NattyNal.class, "/");
-			return new FreeMarkerEngine(config).render(new ModelAndView(model, "index.ftl"));
+			config.setClassForTemplateLoading(NattyNal.class, "/template");
+			return new FreeMarkerEngine(config).render(new ModelAndView(model, "template/index.ftl"));
 		});
 	}
 }

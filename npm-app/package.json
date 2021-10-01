@@ -1,0 +1,16 @@
+{
+  "name": "npm-app",
+  "version": "0.0.1-alpha",
+  "description": "",
+  "source": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel",
+    "build": "parcel build"
+  },
+  "devDependencies": {
+    "parcel": "latest"
+  },
+  "author": "Mahtaran",
+  "license": "CC0"
+}
