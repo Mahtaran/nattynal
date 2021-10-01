@@ -24,11 +24,13 @@ dependencies {
 	implementation "org.slf4j:slf4j-api:1.+"
 	implementation "org.slf4j:slf4j-simple:1.+"
 	implementation "com.sparkjava:spark-core:2.+"
+	implementation "com.sparkjava:spark-template-freemarker:2.+"
 
 	shadow "com.google.guava:guava:30.+"
 	shadow "org.slf4j:slf4j-api:1.+"
 	shadow "org.slf4j:slf4j-simple:1.+"
 	shadow "com.sparkjava:spark-core:2.+"
+	shadow "com.sparkjava:spark-template-freemarker:2.+"
 }
 
 application {
