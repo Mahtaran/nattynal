@@ -9,4 +9,3 @@
 
 rootProject.name = "NattyNal"
 include("app")
-include("npm-app")
