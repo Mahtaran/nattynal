@@ -1,0 +1,23 @@
+{
+	"name": "nattynal",
+	"version": "0.0.1-alpha",
+	"license": "CC0-1.0",
+	"author": "Mahtaran",
+	"description": "",
+	"source": [
+		"src/main/parcel/packages/app/index.ftl"
+	],
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node_modules/.bin/parcel",
+		"build": "node_modules/.bin/parcel build"
+	},
+	"private": true,
+	"workspaces": ["src/main/parcel/packages/*"],
+	"devDependencies": {
+		"parcel": "latest"
+	},
+	"dependencies": {
+		"parcel-transformer-ftl": "link:./src/main/parcel/packages/parcel-transformer-ftl"
+	}
+}

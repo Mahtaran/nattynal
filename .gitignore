@@ -18,6 +18,13 @@ build
 .gradle
 secrets.yml
 
+# node.js / yarn
+node_modules
+package-lock.json
+yarn.lock
+.parcel-cache
+dist
+
 # other
 eclipse
 run

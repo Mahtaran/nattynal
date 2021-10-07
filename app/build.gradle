@@ -1,11 +1,14 @@
+import java.text.SimpleDateFormat
+
 plugins {
 	id "java"
 	id "application"
 	id "idea"
 	id "eclipse"
 	id "maven-publish"
-	id "io.freefair.lombok" version "6.2.0"
-	id "com.github.johnrengelman.shadow" version "7.0.0"
+	id "io.freefair.lombok" version "6.+"
+	id "com.github.johnrengelman.shadow" version "7.+"
+	id "com.github.node-gradle.node" version "3.+"
 }
 
 repositories {
@@ -18,7 +21,8 @@ archivesBaseName = "nattynal"
 mainClassName = "com.amuzil.mahtaran.nattynal.NattyNal"
 
 dependencies {
-	testImplementation "org.junit.jupiter:junit-jupiter:5.7.2"
+	testImplementation "org.junit.jupiter:junit-jupiter-api:5.+"
+	testRuntimeOnly "org.junit.jupiter:junit.jupiter-engine:5.+"
 
 	implementation "com.google.guava:guava:30.+"
 	implementation "org.slf4j:slf4j-api:1.+"
@@ -33,6 +37,23 @@ dependencies {
 	shadow "com.sparkjava:spark-template-freemarker:2.+"
 }
 
+node {
+	download = true
+	version = "16.10.0"
+
+	workDir = file("${project.projectDir}/.gradle/nodejs")
+	npmWorkDir = file("${project.projectDir}/.gradle/npm")
+	yarnWorkDir = file("${project.projectDir}/.gradle/yarn")
+	nodeProjectDir = file("${project.projectDir}")
+}
+
+task parcelBuild(type: YarnTask) {
+	// add the express package only
+	args = ["parcel", "build"]
+}
+tasks.parcelBuild.dependsOn nodeSetup
+tasks.parcelBuild.dependsOn yarn
+
 application {
 	mainClass = project.mainClassName
 }
@@ -41,24 +62,43 @@ shadowJar {
 	archiveClassifier.set ""
 	configurations = [project.configurations.shadow]
 
-	manifest {
-		attributes([
-				"Specification-Title"     : project.version,
-				"Specification-Vendor"    : "Mahtaran",
-				"Specification-Version"   : "1", // We are version 1 of ourselves
-				"Implementation-Title"    : rootProject.name,
-				"Implementation-Version"  : project.version,
-				"Implementation-Vendor"   : "Mahtaran",
-				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-				"Main-Class"              : project.mainClassName,
-				"Signing-Fingerprint"     : project.hasProperty('signSHA1') ? project.findProperty('signSHA1') : "unsigned",
-		])
-	}
+	var dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+	dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+	manifest.attributes(
+		"Specification-Title"     : project.version,
+		"Specification-Vendor"    : "Mahtaran",
+		"Specification-Version"   : "1", // We are version 1 of ourselves
+		"Implementation-Title"    : rootProject.name,
+		"Implementation-Version"  : project.version,
+		"Implementation-Vendor"   : "Mahtaran",
+		"Implementation-Timestamp": dateFormat.format(new Date()),
+		"Main-Class"              : project.mainClassName,
+		"Signing-Fingerprint"     : project.hasProperty('signSHA1') ? project.findProperty('signSHA1') : "unsigned",
+	)
 
 	from("./") {
 		include "*.md"
 	}
+
+	from("dist") {
+		into "parcel"
+	}
+
+	relocate "com.google", "com.amuzil.mahtaran.nattynal.shadow.google"
+	relocate "freemarker", "com.amuzil.mahtaran.nattynal.shadow.freemarker"
+	relocate "javax", "com.amuzil.mahtaran.nattynal.shadow.javax"
+	relocate "org.checkerframework", "com.amuzil.mahtaran.nattynal.shadow.checkerframework"
+	relocate "org.eclipse", "com.amuzil.mahtaran.nattynal.shadow.eclipse"
+	relocate "org.slf4j", "com.amuzil.mahtaran.nattynal.shadow.slf4j"
+	relocate "spark", "com.amuzil.mahtaran.nattynal.shadow.spark"
+
+	// Clean leftovers from shadowed dependencies
+
+	exclude "about.html", "jetty-dir.css"
+	exclude "META-INF/" // This does not exclude MANIFEST.MF as it is generated later on
 }
+tasks.shadowJar.dependsOn parcelBuild
 tasks.jar.finalizedBy shadowJar
 
 tasks.named("test") {
